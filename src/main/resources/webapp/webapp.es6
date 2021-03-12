@@ -1,11 +1,18 @@
 const libPortal = require('/lib/xp/portal');
 
-const libRouter = require('/lib/router')();
-
 const libStatic = require('/lib/enonic/static');
 
+const libRouter = require('/lib/router')();
 
-// -------------------------------------  Initiating 2 different static-getters:
+exports.all = function(req) {
+    return libRouter.dispatch(req);
+};
+
+
+
+
+
+// -------------------------------------  Initiating static-getter #1, and then its lib-route:
 
 const getAsset = libStatic.static(
     {
@@ -14,49 +21,30 @@ const getAsset = libStatic.static(
     }
 );
 
-const getVersioned = libStatic.static(
-    `fingerprinted/version/${app.version}`,
-    {
-        getCleanPath: request => request.pathParams.libRouterPath,
-        etag: true
-    }
+libRouter.get(`/assetByStatic/{libRouterPath:.+}`, req => {
+    const response = getAsset(req);
+    return response;
+});
+
+
+
+
+
+// -------------------------------------  Shorthand: initiating static-getter #2 and its lib-route, all in one:
+
+libRouter.get(
+    `/versionedAsset/{libRouterPath:.+}`,
+    libStatic.static(
+        {
+            root: `fingerprinted/version/${app.version}`,
+            getCleanPath: request => request.pathParams.libRouterPath,
+            etag: true
+        }
+    )
 );
 
 
-// -------------------------------------  Initiating lib-router:
-
-exports.all = function(req) {
-    return libRouter.dispatch(req);
-};
-
-libRouter.get(`/assetByStatic/{libRouterPath:.+}`, req => {
-                                                                                                                        // log.info("Getting asset with lib-static... Request: " + JSON.stringify(req));
-    const response = getAsset(req);
-                                                                                                                        /*
-                                                                                                                        log.info("response (" +
-                                                                                                                            (Array.isArray(response)
-                                                                                                                                ? ("array[" + response.length + "]")
-                                                                                                                                : (typeof response + (response && typeof response === 'object' ? (" with keys: " + JSON.stringify(Object.keys(response))) : "")) ) + "): " + JSON.stringify(response, null, 2) + "\n\n\n"
-                                                                                                                        );
-                                                                                                                         */
-    return response;
-});
-
-libRouter.get(`/versionedAsset/{libRouterPath:.+}`, req => {
-                                                                                                                        // log.info("Getting versioned resource with lib-static... Request: " + JSON.stringify(req));
-    const response = getVersioned(req);
-                                                                                                                        /*
-                                                                                                                        log.info("response (" +
-                                                                                                                            (Array.isArray(response)
-                                                                                                                                ? ("array[" + response.length + "]")
-                                                                                                                                : (typeof response + (response && typeof response === 'object' ? (" with keys: " + JSON.stringify(Object.keys(response))) : "")) ) + "): " + JSON.stringify(response, null, 2) + "\n\n\n"
-                                                                                                                        );
-                                                                                                                         */
-    return response;
-});
-
-
-// -----------------------------------------  Route to main. Fingerprinted is the third static-getter, wrapped in a service:
+// -----------------------------------------  Route to main. Fingerprinted is the static-getter #3, wrapped in a service:
 
 libRouter.get(`/`, () => {
     const fingerprintedUrl = libPortal.serviceUrl({service: 'fingerprinted'});
