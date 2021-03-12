@@ -1,99 +1,87 @@
-const assetService = require('/services/assets/assets');
+const libPortal = require('/lib/xp/portal');
 
-exports.get = req => {
-    const title = 'Hello Web app';
-    return  {
+const libRouter = require('/lib/router')();
+
+const libStatic = require('/lib/enonic/static');
+
+
+// -------------------------------------  Initiating 2 different static-getters:
+
+const getAsset = libStatic.static(
+    {
+        root: 'assets',
+        getCleanPath: request => request.pathParams.libRouterPath
+    }
+);
+
+const getVersioned = libStatic.static(
+    `fingerprinted/version/${app.version}`,
+    {
+        getCleanPath: request => request.pathParams.libRouterPath,
+        etag: true
+    }
+);
+
+
+// -------------------------------------  Initiating lib-router:
+
+exports.all = function(req) {
+    return libRouter.dispatch(req);
+};
+
+libRouter.get(`/assetByStatic/{libRouterPath:.+}`, req => {
+                                                                                                                        // log.info("Getting asset with lib-static... Request: " + JSON.stringify(req));
+    const response = getAsset(req);
+                                                                                                                        /*
+                                                                                                                        log.info("response (" +
+                                                                                                                            (Array.isArray(response)
+                                                                                                                                ? ("array[" + response.length + "]")
+                                                                                                                                : (typeof response + (response && typeof response === 'object' ? (" with keys: " + JSON.stringify(Object.keys(response))) : "")) ) + "): " + JSON.stringify(response, null, 2) + "\n\n\n"
+                                                                                                                        );
+                                                                                                                         */
+    return response;
+});
+
+libRouter.get(`/versionedAsset/{libRouterPath:.+}`, req => {
+                                                                                                                        // log.info("Getting versioned resource with lib-static... Request: " + JSON.stringify(req));
+    const response = getVersioned(req);
+                                                                                                                        /*
+                                                                                                                        log.info("response (" +
+                                                                                                                            (Array.isArray(response)
+                                                                                                                                ? ("array[" + response.length + "]")
+                                                                                                                                : (typeof response + (response && typeof response === 'object' ? (" with keys: " + JSON.stringify(Object.keys(response))) : "")) ) + "): " + JSON.stringify(response, null, 2) + "\n\n\n"
+                                                                                                                        );
+                                                                                                                         */
+    return response;
+});
+
+
+// -----------------------------------------  Route to main. Fingerprinted is the third static-getter, wrapped in a service:
+
+libRouter.get(`/`, () => {
+    const fingerprintedUrl = libPortal.serviceUrl({service: 'fingerprinted'});
+    return {
         body: `
-<html>
-  <head>
-    <title>${title}</title>
-    <link rel="stylesheet" type="text/css" href="${assetService.staticUrl('styles.css')}">
-  </head>
-  <body>
-      <h1>Sweet, "${title}" is working!</h1>
-      <!--img src="/webapp/${app.name}/asset/blah/html5logo.svg"/-->
-  </body>
-</html>
-`
+            <html>
+              <head>
+                <title>It works</title>
+                <link rel="stylesheet" type="text/css" href="assetByStatic/styles.css"/>
+              </head>
+              
+              <body>
+                  <h1>Sweet, it works!</h1>
+                  <img src="assetByStatic/images/html5logo.svg"/>
+                  
+                  <img src="versionedAsset/church.jpg" />
+                  
+                  <script src="${fingerprintedUrl}/fetcher.6cf506f0.js"></script>
+                  
+                  <script>
+                    fetchAndAlert('https://jsonplaceholder.typicode.com/todos/1');
+                  </script>
+                  
+              </body>
+            </html>
+        `
     };
-};
-
-/*
-const getStatic = (req) => ({
-    contentType: 'application/json',
-    body: '{"getStatic":' + JSON.stringify(req, null, 2) + '}'
 });
-
-const getImmutable = (req) => ({
-    contentType: 'application/json',
-    body: '{"getImmutable":' + JSON.stringify(req, null, 2) + '}'
-});
-
-/*const getAsset = (req) => ({
-    contentType: 'application/json',
-    body: '{"getAsset":' + JSON.stringify(req, null, 2) + '}'
-});
-
-const getStatic2Service = (req) => ({
-    contentType: 'application/json',
-    body: '{"getAsset":' + JSON.stringify(req, null, 2) + '}'
-});
-
-const ROUTES = {
-    '/static/': getStatic,
-    '/immutable/': getImmutable,
-
-    '/asset/': (req) => {
-        log.info("Get asset: " + req.rawPath);
-        const response = getTheAsset(req);
-        log.info("theAsset (" +
-        	(Array.isArray(response) ?
-        		("array[" + response.length + "]") :
-        		(typeof response + (response && typeof response === 'object' ? (" with keys: " + JSON.stringify(Object.keys(response))) : ""))
-        	) + "): " + JSON.stringify(response, null, 2)
-        );
-        return response;
-    },
-
-    '/static2/': getStatic2Service,
-};
-
-
-
-exports.get = req => {
-    log.info("/webapp/ (" +
-        (Array.isArray(req) ?
-                ("array[" + req.length + "]") :
-                (typeof req + (req && typeof req === 'object' ? (" with keys: " + JSON.stringify(Object.keys(req))) : ""))
-        ) + "): " + JSON.stringify(req, null, 2)
-    );
-
-    let response;
-    for (let route of Object.keys(ROUTES)) {
-        if (req.rawPath.startsWith(req.contextPath + route)) {
-            response = ROUTES[route](req);
-            break;
-        }
-    }
-    log.info("asset response (" +
-    	(Array.isArray(response) ?
-    		("array[" + response.length + "]") :
-    		(typeof response + (response && typeof response === 'object' ? (" with keys: " + JSON.stringify(Object.keys(response))) : ""))
-    	) + "): " + JSON.stringify(response, null, 2)
-    );
-    if (response) {
-        return response;
-    }
-
-    if (req.rawPath !== req.contextPath) {
-        return {
-            status: 404,
-            body: "Nope nope nope"
-        };
-    }
-
-    return getApp(req);
-};
-
-
- */
