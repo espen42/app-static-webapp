@@ -1,8 +1,7 @@
 const libStatic = require('/lib/enonic/static');
 
 const getStatic = libStatic.static({
-    root: 'fingerprinted/filename',
-    // etag: false
+    root: 'static/fingerprinted',
 });
 
 exports.get = (req) => {
@@ -12,7 +11,7 @@ exports.get = (req) => {
 /*
 
 
-exports.get = libStatic.static('fingerprinted/filename', {etag: false});
+exports.get = libStatic.static('static/fingerprinted', {etag: false});
 
 
  */

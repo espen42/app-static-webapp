@@ -27,7 +27,7 @@ module.exports = {
     },
 
     output: {
-        path: path.resolve(__dirname, 'build', 'resources', 'main', 'fingerprinted', 'filename'),
+        path: path.resolve(__dirname, 'build', 'resources', 'main', 'static', 'fingerprinted'),
         filename: '[name].[contenthash:8].js',
     },
 };

@@ -67,7 +67,7 @@ jar.dependsOn += 'compileToFingerprintedFilename'
 task copyToVersionFolder(type: Copy) {
     from 'src/main/resources/staticSources'
     include 'church.jpg'
-    into "build/resources/main/fingerprinted/version/${version.replace("-", ".")}"
+    into "build/resources/main/static/versioned/${version.replace("-", ".")}"
 }
 copyToVersionFolder.dependsOn += npmInstall
 jar.dependsOn += 'copyToVersionFolder'

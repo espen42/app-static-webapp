@@ -12,7 +12,7 @@ exports.all = function(req) {
 
 
 
-// -------------------------------------  Initiating static-getter #1, and then its lib-route:
+// -------------------------------------  Initiating static-getter #1, and then its lib-route, for clarity:
 
 const getAsset = libStatic.static(
     {
@@ -36,7 +36,7 @@ libRouter.get(
     `/versionedAsset/{libRouterPath:.+}`,
     libStatic.static(
         {
-            root: `fingerprinted/version/${app.version}`,
+            root: `static/versioned/${app.version}`,
             getCleanPath: request => request.pathParams.libRouterPath,
             etag: true
         }
@@ -47,7 +47,7 @@ libRouter.get(
 // -----------------------------------------  Route to main. Fingerprinted is the static-getter #3, wrapped in a service:
 
 libRouter.get(`/`, () => {
-    const fingerprintedUrl = libPortal.serviceUrl({service: 'fingerprinted'});
+    const fingerprintedUrl = libPortal.serviceUrl({service: 'static'});
     return {
         body: `
             <html>
