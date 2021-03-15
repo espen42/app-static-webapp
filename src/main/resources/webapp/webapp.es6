@@ -47,7 +47,7 @@ libRouter.get(
 // -----------------------------------------  Route to main. Fingerprinted is the static-getter #3, wrapped in a service:
 
 libRouter.get(`/`, () => {
-    const fingerprintedUrl = libPortal.serviceUrl({service: 'static'});
+    const staticServiceUrl = libPortal.serviceUrl({service: 'static'});
     return {
         body: `
             <html>
@@ -62,11 +62,10 @@ libRouter.get(`/`, () => {
                   
                   <img src="versionedAsset/church.jpg" />
                   
-                  <script src="${fingerprintedUrl}/fetcher.6cf506f0.js"></script>
-                  
-                  <script>
+                  <script src="${staticServiceUrl}/fingerprinted/fetcher.6cf506f0.js"></script>
+                  <!--script>
                     fetchAndAlert('https://jsonplaceholder.typicode.com/todos/1');
-                  </script>
+                  </script-->
                   
               </body>
             </html>

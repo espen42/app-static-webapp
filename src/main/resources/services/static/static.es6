@@ -1,7 +1,7 @@
 const libStatic = require('/lib/enonic/static');
 
 const getStatic = libStatic.static({
-    root: 'static/fingerprinted',
+    root: 'static',
 });
 
 exports.get = (req) => {
