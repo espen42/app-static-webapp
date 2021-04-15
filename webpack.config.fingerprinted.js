@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        fetcher: path.resolve(__dirname, 'src', 'main', 'resources', 'staticSources', 'fetcher.es6')
+        fetcher: path.resolve(__dirname, 'src', 'main', 'resources', 'staticSources', 'fingerprinted', 'fetcher.es6')
     },
 
     module: {

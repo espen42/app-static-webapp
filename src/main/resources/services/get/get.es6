@@ -44,34 +44,112 @@ const parseOptionParams = (req) => {
     return options;
 }
 
+
+                                                                                                                                const prettify = (obj, label, suppressCode = false, indent = 0) => {
+                                                                                                                                    let str = " ".repeat(indent) + (
+                                                                                                                                        label !== undefined
+                                                                                                                                            ? label + ": "
+                                                                                                                                            : ""
+                                                                                                                                    );
+
+                                                                                                                                    if (typeof obj === 'function') {
+                                                                                                                                        if (!suppressCode) {
+                                                                                                                                            return `${str}···· (function)\n${" ".repeat(indent + 4)}` +
+                                                                                                                                                obj.toString()
+                                                                                                                                                    .replace(
+                                                                                                                                                        /\r?\n\r?/g,
+                                                                                                                                                        `\n${" ".repeat(indent + 4)}`
+                                                                                                                                                    ) +
+                                                                                                                                                "\n" + " ".repeat(indent) + "····"
+                                                                                                                                                ;
+                                                                                                                                        } else {
+                                                                                                                                            return `${str}···· (function)`;
+                                                                                                                                        }
+
+                                                                                                                                    } else if (Array.isArray(obj)) {
+                                                                                                                                        return obj.length === 0
+                                                                                                                                            ? `${str}[]`
+                                                                                                                                            : (
+                                                                                                                                                `${str}[\n` +
+                                                                                                                                                obj.map(
+                                                                                                                                                    (item, i) =>
+                                                                                                                                                        prettify(item, i, suppressCode, indent + 4)
+                                                                                                                                                )
+                                                                                                                                                    .join(",\n") +
+                                                                                                                                                `\n${" ".repeat(indent)}]`
+                                                                                                                                            );
+
+                                                                                                                                    } else if (obj && typeof obj === 'object') {
+                                                                                                                                        try {
+                                                                                                                                            if (Object.keys(obj).length === 0) {
+                                                                                                                                                return `${str}{}`;
+                                                                                                                                            } else {
+                                                                                                                                                return `${str}{\n` +
+                                                                                                                                                    Object.keys(obj).map(
+                                                                                                                                                        key => prettify(obj[key], key, suppressCode, indent + 4)
+                                                                                                                                                    ).join(",\n") +
+                                                                                                                                                    `\n${" ".repeat(indent)}}`
+                                                                                                                                            }
+                                                                                                                                        } catch (e) {
+                                                                                                                                            log.info(e);
+                                                                                                                                            return `${str}···· (${typeof obj})\n${" ".repeat(indent + 4)}` +
+                                                                                                                                                obj.toString()
+                                                                                                                                                    .replace(
+                                                                                                                                                        /\r?\n\r?/g,
+                                                                                                                                                        `\n${" ".repeat(indent + 4)}`
+                                                                                                                                                    ) +
+                                                                                                                                                "\n" + " ".repeat(indent) + `····`;
+                                                                                                                                        }
+                                                                                                                                    } else if (obj === undefined || obj === null) {
+                                                                                                                                        return `${str}${obj}`;
+                                                                                                                                    } else if (JSON.stringify(obj) !== undefined) {
+                                                                                                                                        return `${str}` + JSON.stringify(obj, null, 2).replace(
+                                                                                                                                            /\r?\n\r?/g,
+                                                                                                                                            `\n${" ".repeat(indent + 2)}`
+                                                                                                                                        );
+                                                                                                                                    } else {
+                                                                                                                                        return `${str}···· (${typeof obj})\n${" ".repeat(indent + 4)}` +
+                                                                                                                                            obj.toString()
+                                                                                                                                                .replace(
+                                                                                                                                                    /\r?\n\r?/g,
+                                                                                                                                                    `\n${" ".repeat(indent + 4)}`
+                                                                                                                                                ) +
+                                                                                                                                            "\n" + " ".repeat(indent) + `····`;
+                                                                                                                                    }
+                                                                                                                                };
+
 exports.get = (req) => {
+
+    																													log.info(prettify(req, "GET req"));
 
     const options = parseOptionParams(req);
 
-                                                                                                                        log.info("options (" +
-                                                                                                                            (Array.isArray(options) ?
-                                                                                                                                ("array[" + options.length + "]") :
-                                                                                                                                (typeof options + (options && typeof options === 'object' ? (" with keys: " + JSON.stringify(Object.keys(options))) : ""))
-                                                                                                                            ) + "): " + JSON.stringify(options, null, 2)
-                                                                                                                        );
-
-    const relativePath = req.rawPath.substring(req.contextPath.length);
-
-                                                                                                                        log.info("relativePath (" +
-                                                                                                                            (Array.isArray(relativePath) ?
-                                                                                                                                ("array[" + relativePath.length + "]") :
-                                                                                                                                (typeof relativePath + (relativePath && typeof relativePath === 'object' ? (" with keys: " + JSON.stringify(Object.keys(relativePath))) : ""))
-                                                                                                                            ) + "): " + JSON.stringify(relativePath, null, 2)
-                                                                                                                        );
 
 
-    const response = libStatic.get(relativePath, options);
-                                                                                                                        log.info("response (" +
-                                                                                                                            (Array.isArray(response) ?
-                                                                                                                                ("array[" + response.length + "]") :
-                                                                                                                                (typeof response + (response && typeof response === 'object' ? (" with keys: " + JSON.stringify(Object.keys(response))) : ""))
-                                                                                                                            ) + "): " + JSON.stringify(response, null, 2) + "\n\n\n"
-                                                                                                                        );
+    																													log.info(prettify(options, "GET options"));
+
+    const absolutePath = req.rawPath.substring(req.contextPath.length);
+
+    // http://localhost:8080/_/service/test.enonic.staticapp/get/assets/images/html5logo.svg
+    // --> /assets/images/html5logo.svg
+
+
+    																													log.info(prettify(absolutePath, "GET absolutePath"));
+
+
+    const response = libStatic.get(absolutePath, options);
+
+    // const response = libStatic.get(absolutePath);
+
+    /*
+       const response = libStatic.get({
+           path: absolutePath,
+           ...options
+       });
+    */
+
+
+    																													log.info(prettify(response, "GET response"));
 
     return response;
 }
