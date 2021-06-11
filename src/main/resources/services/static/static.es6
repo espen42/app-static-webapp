@@ -2,6 +2,7 @@ const libStatic = require('/lib/enonic/static');
 
 const getStatic = libStatic.buildGetter({
     root: 'static',
+    etag: true
 });
 
 
@@ -79,12 +80,11 @@ const getStatic = libStatic.buildGetter({
                                                                                                                         };
 
 exports.get = (req) => {
-
-    																													log.info(prettify(req, "STATIC req"));
+    																													log.info(prettify(req, "-------------> STATIC req"));
 
     const response = getStatic(req);
 
-    																													log.info(prettify(response, "STATIC response"));
+    																													log.info(prettify(response, "<-------------- STATIC response"));
     return response;
 }
 

@@ -120,7 +120,7 @@ const parseOptionParams = (req) => {
 
 exports.get = (req) => {
 
-    																													log.info(prettify(req, "GET req"));
+    																													log.info(prettify(req, "---------------> GET service req"));
 
     const options = parseOptionParams(req);
 
@@ -149,7 +149,7 @@ exports.get = (req) => {
     */
 
 
-    																													log.info(prettify(response, "GET response"));
+    																													log.info(prettify(response, "<------------- GET response"));
 
     return response;
 }

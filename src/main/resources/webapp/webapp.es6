@@ -134,7 +134,7 @@ libRouter.get(`/`, req => {
             <html>
               <head>
                 <meta charset="UTF-8">
-                <title>It works</title>
+                <title>It works - but does slashless index2 redirect in prod runmode?</title>
                 <link rel="stylesheet" type="text/css" href="${req.contextPath}/assetByStatic/styles.css"/>
               </head>
               
