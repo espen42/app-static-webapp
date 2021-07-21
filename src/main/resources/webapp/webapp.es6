@@ -4,6 +4,8 @@ const libStatic = require('/lib/enonic/static');
 
 const libRouter = require('/lib/router')();
 
+const { prettify, prettyReq } = require('/lib/utils');
+
 exports.all = function(req) {
     return libRouter.dispatch(req);
 };
@@ -11,18 +13,21 @@ exports.all = function(req) {
 
 
 
-
 // -------------------------------------  Initiating static-getter #1, and then its lib-route, for clarity:
 
-const getAsset = libStatic.buildGetter(
+const assetByStaticGetter = libStatic.buildGetter(
     {
         root: 'assets',
-        getCleanPath: request => request.pathParams.libRouterPath
+        getCleanPath: request => {
+                                                                                                                        log.info(prettify(request.pathParams.libRouterPath, "assetByStatic libRouterPath"));
+            return request.pathParams.libRouterPath;
+        }
     }
 );
 
 libRouter.get(`/assetByStatic/{libRouterPath:.+}`, req => {
-    const response = getAsset(req);
+                                                                                                                        log.info(prettify(prettyReq(req), "assetByStatic req"));
+    const response = assetByStaticGetter(req);
     return response;
 });
 
@@ -32,10 +37,13 @@ libRouter.get(`/assetByStatic/{libRouterPath:.+}`, req => {
 
 // -------------------------------------  Shorthand: initiating static-getter #2 and its lib-route, all in one:
 
-const versionedGetter = libStatic.buildGetter(
+const versionedAssetGetter = libStatic.buildGetter(
     {
         root: `static/versioned/${app.version}`,
-        getCleanPath: request => request.pathParams.libRouterPath,
+        getCleanPath: request => {
+                                                                                                                        log.info(prettify(request.pathParams.libRouterPath, "versionedAsset libRouterPath"));
+            return request.pathParams.libRouterPath;
+        },
         etag: true
     }
 );
@@ -43,8 +51,8 @@ libRouter.get(
     `/versionedAsset/{libRouterPath:.+}`,
     req => {
 
-        																												log.info(prettify(req, "VERSIONED req"));
-        return versionedGetter(req);
+        																												log.info(prettify(prettyReq(req), "versionedAsset req"));
+        return versionedAssetGetter(req);
     }
 );
 
@@ -52,82 +60,9 @@ libRouter.get(
 // -----------------------------------------  Route to main. Fingerprinted is the static-getter #3, wrapped in a service:
 
 
-                                                                                                                        const prettify = (obj, label, suppressCode = false, indent = 0) => {
-                                                                                                                            let str = " ".repeat(indent) + (
-                                                                                                                                label !== undefined
-                                                                                                                                    ? label + ": "
-                                                                                                                                    : ""
-                                                                                                                            );
-
-                                                                                                                            if (typeof obj === 'function') {
-                                                                                                                                if (!suppressCode) {
-                                                                                                                                    return `${str}···· (function)\n${" ".repeat(indent + 4)}` +
-                                                                                                                                        obj.toString()
-                                                                                                                                            .replace(
-                                                                                                                                                /\r?\n\r?/g,
-                                                                                                                                                `\n${" ".repeat(indent + 4)}`
-                                                                                                                                            ) +
-                                                                                                                                        "\n" + " ".repeat(indent) + "····"
-                                                                                                                                        ;
-                                                                                                                                } else {
-                                                                                                                                    return `${str}···· (function)`;
-                                                                                                                                }
-
-                                                                                                                            } else if (Array.isArray(obj)) {
-                                                                                                                                return obj.length === 0
-                                                                                                                                    ? `${str}[]`
-                                                                                                                                    : (
-                                                                                                                                        `${str}[\n` +
-                                                                                                                                        obj.map(
-                                                                                                                                            (item, i) =>
-                                                                                                                                                prettify(item, i, suppressCode, indent + 4)
-                                                                                                                                        )
-                                                                                                                                            .join(",\n") +
-                                                                                                                                        `\n${" ".repeat(indent)}]`
-                                                                                                                                    );
-
-                                                                                                                            } else if (obj && typeof obj === 'object') {
-                                                                                                                                try {
-                                                                                                                                    if (Object.keys(obj).length === 0) {
-                                                                                                                                        return `${str}{}`;
-                                                                                                                                    } else {
-                                                                                                                                        return `${str}{\n` +
-                                                                                                                                            Object.keys(obj).map(
-                                                                                                                                                key => prettify(obj[key], key, suppressCode, indent + 4)
-                                                                                                                                            ).join(",\n") +
-                                                                                                                                            `\n${" ".repeat(indent)}}`
-                                                                                                                                    }
-                                                                                                                                } catch (e) {
-                                                                                                                                    log.info(e);
-                                                                                                                                    return `${str}···· (${typeof obj})\n${" ".repeat(indent + 4)}` +
-                                                                                                                                        obj.toString()
-                                                                                                                                            .replace(
-                                                                                                                                                /\r?\n\r?/g,
-                                                                                                                                                `\n${" ".repeat(indent + 4)}`
-                                                                                                                                            ) +
-                                                                                                                                        "\n" + " ".repeat(indent) + `····`;
-                                                                                                                                }
-                                                                                                                            } else if (obj === undefined || obj === null) {
-                                                                                                                                return `${str}${obj}`;
-                                                                                                                            } else if (JSON.stringify(obj) !== undefined) {
-                                                                                                                                return `${str}` + JSON.stringify(obj, null, 2).replace(
-                                                                                                                                    /\r?\n\r?/g,
-                                                                                                                                    `\n${" ".repeat(indent + 2)}`
-                                                                                                                                );
-                                                                                                                            } else {
-                                                                                                                                return `${str}···· (${typeof obj})\n${" ".repeat(indent + 4)}` +
-                                                                                                                                    obj.toString()
-                                                                                                                                        .replace(
-                                                                                                                                            /\r?\n\r?/g,
-                                                                                                                                            `\n${" ".repeat(indent + 4)}`
-                                                                                                                                        ) +
-                                                                                                                                    "\n" + " ".repeat(indent) + `····`;
-                                                                                                                            }
-                                                                                                                        };
-
 libRouter.get(`/`, req => {
 
-    																													log.info(prettify(req, "WEBAPP request"));
+    																													log.info(prettify(prettyReq(req), "WEBAPP request"));
     const staticServiceUrl = libPortal.serviceUrl({service: 'static'});
     return {
         body: `
