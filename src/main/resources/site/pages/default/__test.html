@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Static app | default page</title>
+        <link rel="stylesheet" type="text/css" href="http://localhost:8080/webapp/test.enonic.staticapp/assetByStatic/styles.css"/>
+    </head>
+
+
+    <body class="xp-page">
+        <h1>Static app</h1>
+
+        <div>
+            <p>Html5 logo:</p>
+            <img src="http://localhost:8080/webapp/test.enonic.staticapp/assetByStatic/images/html5logo.svg"/>
+        </div>
+
+        <div>
+            <p>Church (versioned asset):</p>
+            <img src="http://localhost:8080/webapp/test.enonic.staticapp/versionedAsset/church.jpg" width="300px"/>
+        </div>
+
+        <div>
+            <p>Church (service):</p>
+            <img src="http://localhost:8080/_/service/test.enonic.staticapp/static/versioned/0.0.1.SNAPSHOT/church.jpg"
+                 width="300px"/>
+        </div>
+
+        <div data-portal-region="main">
+            <p>Regions:</p>
+
+        </div>
+
+        <hr/>
+        <div>
+            <p>Links:</p>
+            <ul id="links">
+                <li class="modeswitch">👉 <a href="http://localhost:8080/site/default/master/the-page">Live</a></li>
+                <li class="modeswitch">👉 <a href="http://localhost:8080/webapp/test.enonic.staticapp">Webapp</a></li>
+                <li class="modeswitch">👉 <a
+                        href="http://localhost:8080/_/service/test.enonic.staticapp/static">Static
+                    (/index.html - NO trailing slash)</a></li>
+                <li class="modeswitch">👉 <a
+                        href="http://localhost:8080/_/service/test.enonic.staticapp/static/">Static
+                    (/index.html - WITH trailing slash)</a></li>
+                <li class="modeswitch">👉 <a
+                        href="http://localhost:8080/_/service/test.enonic.staticapp/static/index2">Static/index2
+                    (/index.html - NO trailing slash)</a></li>
+                <li class="modeswitch">👉 <a
+                        href="http://localhost:8080/_/service/test.enonic.staticapp/static/index2/">Static/index2
+                    (/index.html - WITH trailing slash)</a></li>
+            </ul>
+        </div>
+    </body>
+</html>

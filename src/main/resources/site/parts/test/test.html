@@ -1,0 +1,33 @@
+<div class="xp-part">
+    <h3>This is a test part.</h3>
+
+    <div>
+        <p>Html5 logo:</p>
+        <img data-th-src="${urls.html5logo}"/>
+    </div>
+
+    <div>
+        <p>Church (versioned asset):</p>
+        <img data-th-src="${urls.church.versionedAsset}" width="300px"/>
+    </div>
+
+    <div>
+        <p>Church (service):</p>
+        <img data-th-src="${urls.church.service}" width="300px"/>
+    </div>
+
+    <div data-portal-region="main">
+        <p>Regions:</p>
+        <div data-th-each="component : ${mainRegion.components}" data-th-remove="tag">
+            <div data-portal-component="${component.path}" data-th-remove="tag" />
+        </div>
+    </div>
+
+    <hr/>
+    <div>
+        <p>Links:</p>
+        <ul id="links">
+            <li data-th-each="link : ${links}" class="modeswitch" >👉 <a data-th-href="${link.url}" data-th-text="${link.text}">Placeholder</a></li>
+        </ul>
+    </div>
+</div>
