@@ -32,6 +32,8 @@ dependencies {
     include 'com.enonic.lib:lib-static:1.0.2-SNAPSHOT'
 }
 
+task doCopy {}
+jar.dependsOn += 'doCopy'
 
 // This task takes care of es6 under src/main/resources/site. You can replace it with build steps of your own if you want.
 // IMPORTANT: IF YOU DON'T USE THIS TASK TO COMPILE THE REGULAR XP JS (/ES6/TS etc),
@@ -56,7 +58,7 @@ task compileXP(type: NodeTask) {
     outputs.dir("build/resources/main")
 }
 compileXP.dependsOn += npmInstall
-jar.dependsOn += 'compileXP'
+doCopy.dependsOn += 'compileXP'
 
 
 task compileToFingerprintedFilename(type: NodeTask) {
@@ -64,7 +66,7 @@ task compileToFingerprintedFilename(type: NodeTask) {
     args = ["--config", "./webpack.config.fingerprinted.js"]
 }
 compileToFingerprintedFilename.dependsOn += npmInstall
-jar.dependsOn += 'compileToFingerprintedFilename'
+doCopy.dependsOn += 'compileToFingerprintedFilename'
 
 
 task copyToVersionFolder(type: Copy) {
@@ -73,7 +75,7 @@ task copyToVersionFolder(type: Copy) {
     into "build/resources/main/static/versioned/${version.replace("-", ".")}"
 }
 copyToVersionFolder.dependsOn += npmInstall
-jar.dependsOn += 'copyToVersionFolder'
+doCopy.dependsOn += 'copyToVersionFolder'
 
 task copyToStaticFolder1(type: Copy) {
     from 'src/main/resources/staticSources'
@@ -81,7 +83,7 @@ task copyToStaticFolder1(type: Copy) {
     into "build/resources/main/static"
 }
 copyToStaticFolder1.dependsOn += npmInstall
-jar.dependsOn += 'copyToStaticFolder1'
+doCopy.dependsOn += 'copyToStaticFolder1'
 
 task copyToStaticFolder2(type: Copy) {
     from 'src/main/resources/staticSources/index2'
@@ -89,7 +91,22 @@ task copyToStaticFolder2(type: Copy) {
     into "build/resources/main/static/index2"
 }
 copyToStaticFolder2.dependsOn += npmInstall
-jar.dependsOn += 'copyToStaticFolder2'
+doCopy.dependsOn += 'copyToStaticFolder2'
+
+task copyToStaticFolderSpecialChar(type: Copy) {
+    from 'src/main/resources/staticSources/indeæ'
+    include 'index.html'
+    into "build/resources/main/static/indeæ"
+}
+copyToStaticFolderSpecialChar.dependsOn += npmInstall
+doCopy.dependsOn += 'copyToStaticFolderSpecialChar'
+
+
+task cleanupStaticSources(type: Delete) {
+    delete 'build/resources/main/staticSources'
+}
+jar.dependsOn += 'cleanupStaticSources'
+cleanupStaticSources.mustRunAfter doCopy
 
 repositories {
     mavenLocal()
