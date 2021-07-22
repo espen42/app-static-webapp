@@ -4,16 +4,17 @@ const thymeleaf = require('/lib/thymeleaf');
 const view = resolve('test.html');
 
 exports.get = function(request) {
-
+    //log.info("Go.");
     const content = portal.getContent();
+    //log.info("-------------\nCONTENT:\n" + JSON.stringify(content, null, 2));
 
     const modeLink = request.mode === 'preview'
         ? {
-            url: `/site/default/master/${content._name}`,
+            url: `/site/default/master${content._path}`,
             text: 'Live'
         }
         : {
-            url: `/admin/site/preview/default/draft/${content._name}`,
+            url: `/admin/site/preview/default/draft${content._path}`,
             text: 'Preview'
         };
 
@@ -40,6 +41,11 @@ exports.get = function(request) {
         text: 'Static/index2 (/index.html - WITH trailing slash)'
     }
 
+    const stylesLink = {
+        url: `/webapp/${app.name}/assetByStatic/styles.css`,
+        text: 'Styles source'
+    }
+
     const mainRegion = content.page.regions["main"];
 
     const model = {
@@ -49,10 +55,10 @@ exports.get = function(request) {
             staticIndexUrlNoSlash,
             staticIndexUrlSlash,
             staticIndex2UrlNoSlash,
-            staticIndex2UrlSlash
+            staticIndex2UrlSlash,
+            stylesLink
         ],
         urls: {
-            styles: `/webapp/${app.name}/assetByStatic/styles.css`,
             html5logo:  `/webapp/${app.name}/assetByStatic/images/html5logo.svg`,
             church: {
                 versionedAsset: `/webapp/${app.name}/versionedAsset/church.jpg`,
@@ -62,5 +68,11 @@ exports.get = function(request) {
         mainRegion
     };
 
-    return thymeleaf.render(view, model);
+    //log.info("-------------\nMODEL:\n" + JSON.stringify(model, null, 2));
+
+    const body = thymeleaf.render(view, model);
+
+    //log.info("-------------\nOUTPUT:\n" + body);
+
+    return { body };
 };

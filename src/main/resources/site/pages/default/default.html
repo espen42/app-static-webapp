@@ -25,11 +25,11 @@
             <img data-th-src="${urls.church.service}" width="300px"/>
         </div>
 
-        <div data-portal-region="main">
+        <div data-portal-region="main" style="border:3px solid #aaffaa">
             <p>Regions:</p>
-            <div data-th-each="component : ${mainRegion.components}" data-th-remove="tag">
-                <div data-portal-component="${component.path}" data-th-remove="tag" />
-            </div>
+            <th:block data-th-each="component : ${mainRegion.components}">
+                <th:block data-portal-component="${component.path}"/>
+            </th:block>
         </div>
 
         <hr/>

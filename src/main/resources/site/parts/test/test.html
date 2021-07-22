@@ -1,4 +1,4 @@
-<div class="xp-part">
+<div class="xp-part" style="background-color:#ddddff">
     <h3>This is a test part.</h3>
 
     <div>
@@ -14,13 +14,6 @@
     <div>
         <p>Church (service):</p>
         <img data-th-src="${urls.church.service}" width="300px"/>
-    </div>
-
-    <div data-portal-region="main">
-        <p>Regions:</p>
-        <div data-th-each="component : ${mainRegion.components}" data-th-remove="tag">
-            <div data-portal-component="${component.path}" data-th-remove="tag" />
-        </div>
     </div>
 
     <hr/>

@@ -4,17 +4,17 @@ const thymeleaf = require('/lib/thymeleaf');
 const view = resolve('default.html');
 
 exports.get = function(request) {
-                                                                                                                        log.info("Go.");
+                                                                                                                        //log.info("Go.");
     const content = portal.getContent();
-                                                                                                                        log.info("-------------\nCONTENT:\n" + JSON.stringify(content, null, 2));
+                                                                                                                        //log.info("-------------\nCONTENT:\n" + JSON.stringify(content, null, 2));
 
     const modeLink = request.mode === 'preview'
         ? {
-            url: `/site/default/master/${content._name}`,
+            url: `/site/default/master${content._path}`,
             text: 'Live'
         }
         : {
-            url: `/admin/site/preview/default/draft/${content._name}`,
+            url: `/admin/site/preview/default/draft${content._path}`,
             text: 'Preview'
         };
 
@@ -53,8 +53,8 @@ exports.get = function(request) {
             staticIndex2UrlSlash
         ],
         urls: {
-            styles: `/webapp/${app.name}/assetsByStatic/styles.css`,
-            html5logo:  `/webapp/${app.name}/assetsByStatic/images/html5logo.svg`,
+            styles: `/webapp/${app.name}/assetByStatic/styles.css`,
+            html5logo:  `/webapp/${app.name}/assetByStatic/images/html5logo.svg`,
             church: {
                 versionedAsset: `/webapp/${app.name}/versionedAsset/church.jpg`,
                 service: `${portal.serviceUrl({service: 'static'})}/versioned/${app.version}/church.jpg`,
@@ -63,11 +63,11 @@ exports.get = function(request) {
         mainRegion
     };
 
-                                                                                                                        log.info("-------------\nMODEL:\n" + JSON.stringify(model, null, 2));
+                                                                                                                        //log.info("-------------\nMODEL:\n" + JSON.stringify(model, null, 2));
 
-    const output = thymeleaf.render(view, model);
+    const body = thymeleaf.render(view, model);
 
-                                                                                                                        log.info("-------------\nOUTPUT:\n" + output);
+                                                                                                                        //log.info("-------------\nOUTPUT:\n" + body);
 
-    return output;
+    return { body };
 };
