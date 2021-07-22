@@ -3,17 +3,15 @@
   <!--x-data name="SoMe" allowContentTypes="person|movie"/-->
   <form/>
   <mappings>
-    <!--mapping controller="/controllers/graphql.js" order="50">
-      <pattern>/api</pattern>
+    <mapping controller="/controllers/versioned.js" order="50">
+      <pattern>/versioned/.*</pattern>
     </mapping>
-    <mapping controller="/controllers/info.js" order="50">
-      <match>type:'portal:site'</match>
+    <mapping controller="/controllers/assets.js" order="50">
+        <pattern>/assets/.*</pattern>
     </mapping>
-    <mapping controller="/controllers/preview.js" order="50">
-      <match>type:'.*:person'</match>
-    </mapping>
-    <mapping controller="/controllers/preview.js" order="50">
-      <match>type:'.*:movie'</match>
-    </mapping-->
+      <mapping controller="/controllers/static.js" order="50">
+          <pattern>/static/.*</pattern>
+      </mapping>
+
   </mappings>
 </site>
