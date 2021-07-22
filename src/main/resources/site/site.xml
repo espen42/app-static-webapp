@@ -4,13 +4,13 @@
   <form/>
   <mappings>
     <mapping controller="/controllers/versioned.js" order="50">
-      <pattern>/versioned/.*</pattern>
+      <pattern>/versioned(/.*)?$</pattern>
     </mapping>
     <mapping controller="/controllers/assets.js" order="50">
-        <pattern>/assets/.*</pattern>
+        <pattern>/assets(/.*)?$</pattern>
     </mapping>
       <mapping controller="/controllers/static.js" order="50">
-          <pattern>/static/.*</pattern>
+          <pattern>/static(/.*)?$</pattern>
       </mapping>
 
   </mappings>
