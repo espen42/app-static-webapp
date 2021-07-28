@@ -27,6 +27,7 @@ dependencies {
 
     include "com.enonic.lib:lib-thymeleaf:2.0.1"
     include 'com.enonic.lib:lib-router:2.1.0'
+    include 'com.enonic.lib:lib-router:3.0.0-SNAPSHOT'
     include 'com.enonic.lib:lib-landingpage:2.0.0'
 
     include 'com.enonic.lib:lib-static:1.0.2-SNAPSHOT'
