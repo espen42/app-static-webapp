@@ -20,7 +20,7 @@ const getAsset = libStatic.buildGetter(
                                                                                                                         log.info("------ assets cleanPath: " + JSON.stringify(output));
             return output;
         },
-        etag: true
+        cacheControl: false
     }
 );
 

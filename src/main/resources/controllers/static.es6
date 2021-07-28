@@ -20,7 +20,7 @@ const getStatic = libStatic.buildGetter(
             																											log.info("------ Static cleanPath: " + JSON.stringify(output));
             return output;
         },
-        etag: true
+        cacheControl: false
     }
 );
 

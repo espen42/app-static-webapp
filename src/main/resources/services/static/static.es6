@@ -5,7 +5,7 @@ const { prettify, prettyReq } = require('/lib/utils');
 
 const getStatic = libStatic.buildGetter({
     root: 'static',
-    etag: true
+    cacheControl: false
 });
 
 

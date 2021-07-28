@@ -20,7 +20,7 @@ const getVersionedAsset = libStatic.buildGetter(
                                                                                                                         log.info("------ versioned cleanPath: " + JSON.stringify(output));
             return output;
         },
-        etag: true
+        cacheControl: false
     }
 );
 

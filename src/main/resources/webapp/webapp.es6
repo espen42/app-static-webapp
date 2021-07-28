@@ -7,6 +7,7 @@ const libRouter = require('/lib/router')();
 const { prettify, prettyReq } = require('/lib/utils');
 
 exports.all = function(req) {
+                                                                                                                        log.info(prettify(prettyReq(req), "------------------\nRAW req"));
     return libRouter.dispatch(req);
 };
 
@@ -19,17 +20,28 @@ const assetByStaticGetter = libStatic.buildGetter(
     {
         root: 'assets',
         getCleanPath: request => {
-                                                                                                                        log.info(prettify(request.pathParams.libRouterPath, "assetByStatic libRouterPath"));
-            return request.pathParams.libRouterPath;
-        }
+            return request.pathParams.libRouterPath || "";
+        },
+        cacheControl: false
     }
 );
 
 libRouter.get(`/assetByStatic/{libRouterPath:.+}`, req => {
                                                                                                                         log.info(prettify(prettyReq(req), "assetByStatic req"));
-    const response = assetByStaticGetter(req);
-    return response;
-});
+        return assetByStaticGetter(req);
+    }
+);
+
+/*libRouter.get(
+    [
+        '/assetByStatic',
+        '/assetByStatic/{libRouterPath:.*}'
+    ],
+    req => {
+        log.info(prettify(prettyReq(req), "assetByStatic req"));
+        return assetByStaticGetter(req);
+    }
+);*/
 
 
 
@@ -44,17 +56,29 @@ const versionedAssetGetter = libStatic.buildGetter(
                                                                                                                         log.info(prettify(request.pathParams.libRouterPath, "versionedAsset libRouterPath"));
             return request.pathParams.libRouterPath;
         },
-        etag: true
+        cacheControl: false
     }
 );
 libRouter.get(
     `/versionedAsset/{libRouterPath:.+}`,
     req => {
-
         																												log.info(prettify(prettyReq(req), "versionedAsset req"));
         return versionedAssetGetter(req);
     }
 );
+/*
+libRouter.get(
+    [
+        '/versionedAsset',
+        '/versionedAsset/{libRouterPath:.+}'
+    ],
+    req => {
+        log.info(prettify(prettyReq(req), "versionedAsset req"));
+        return versionedAssetGetter(req);
+    }
+);
+*/
+
 
 
 // -----------------------------------------  Route to main. Fingerprinted is the static-getter #3, wrapped in a service:
@@ -62,22 +86,30 @@ libRouter.get(
 
 libRouter.get(`/`, req => {
 
-    																													log.info(prettify(prettyReq(req), "WEBAPP request"));
+    if (!(req.rawPath || '').endsWith('/')) {
+                                                                                                                        log.info("Redirecting to webapp...");
+        return {
+            redirect: req.path + '/'
+        }
+    }
+
+                                                                                                                        log.info(prettify(prettyReq(req), "WEBAPP request"));
     const staticServiceUrl = libPortal.serviceUrl({service: 'static'});
+
     return {
         body: `
             <html>
               <head>
                 <meta charset="UTF-8">
                 <title>It works - but does slashless index2 redirect in prod runmode?</title>
-                <link rel="stylesheet" type="text/css" href="${req.contextPath}/assetByStatic/styles.css"/>
+                <link rel="stylesheet" type="text/css" href="assetByStatic/styles.css"/>
               </head>
               
               <body>
                   <h1>Sweet, it works!</h1>
-                  <img src="${req.contextPath}/assetByStatic/images/html5logo.svg"/>
+                  <img src="assetByStatic/images/html5logo.svg"/>
                   
-                  <img src="${req.contextPath}/versionedAsset/church.jpg" />
+                  <img src="versionedAsset/church.jpg" />
                   
                   <script src="${staticServiceUrl}/fingerprinted/fetcher.1bce7a40.js"></script>
                   <!--script>
