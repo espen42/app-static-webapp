@@ -19,55 +19,27 @@ exports.all = function(req) {
 const assetByStaticGetter = libStatic.buildGetter(
     {
         root: 'assets',
-        getCleanPath: request => {
-            return (
-                (request.pathParams || {}).libRouterPath ||
-                request.rawPath.substring(`${request.contextPath}/assetByStatic`.length)
-            );
-        },
+        // If no root index fallback:          getCleanPath: request => request.pathParams.libRouterPath,
+        getCleanPath: request => (
+            request.pathParams.libRouterPath ||
+            (request.rawPath.endsWith("/")
+                    ? "/"
+                    : ""
+            )
+        ),
         cacheControl: false
     }
 );
 libRouter.get(
-    '/assetByStatic',
+    // If no root index fallback: '/assetByStatic/{libRouterPath:.+}'  note the +
+    // For root index fallback (requires lib-router 3+) :
+    [
+        '/assetByStatic',
+        '/assetByStatic/{libRouterPath:.*}'
+    ],
     req => {
                                                                                                                         log.info(prettify(prettyReq(req), "assetByStatic req"));
         return assetByStaticGetter(req);
-    }
-);
-
-libRouter.get(
-    '/test1',
-    req => {
-        log.info("Test1");
-        return { body: '<html><body>Test1</body></html>'}
-    }
-);
-
-libRouter.get(
-    '/test2/',
-    req => {
-        log.info("Test2/");
-        return { body: '<html><body>Test2/</body></html>'}
-    }
-);
-
-libRouter.get(
-    [
-        '/test3',
-        '/test3/'
-    ],
-    req => {
-        log.info("Test3 (array)");
-        return { body: '<html><body>Test3 (array)</body></html>'}
-    }
-);
-
-libRouter.get(
-    '/test4/?',
-    req => {
-        log.info("Test4/?");
-        return { body: '<html><body>Test4/?</body></html>'}
     }
 );
 
@@ -78,20 +50,23 @@ libRouter.get(
 const versionedAssetGetter = libStatic.buildGetter(
     {
         root: `static/versioned/${app.version}`,
-        getCleanPath: request => {
-                                                                                                                        log.info(prettify(request.pathParams.libRouterPath, "versionedAsset libRouterPath"));
-            return (
-                (request.pathParams || {}).libRouterPath ||
-                request.rawPath.substring(`${request.contextPath}/versionedAsset`.length)
-            );
-        },
+        // If no root index fallback:          getCleanPath: request => request.pathParams.libRouterPath,
+        getCleanPath: request => (
+            request.pathParams.libRouterPath ||
+            (request.rawPath.endsWith("/")
+                    ? "/"
+                    : ""
+            )
+        ),
         cacheControl: false
     }
 );
 libRouter.get(
+    // If no root index fallback: '/assetByStatic/{libRouterPath:.+}'  note the +
+    // For root index fallback (requires lib-router 3+) :
     [
-        '/versionedAsset/',
-        '/versionedAsset/{libRouterPath:.+}'
+        '/versionedAsset',
+        '/versionedAsset/{libRouterPath:.*}'
     ],
     req => {
         																												log.info(prettify(prettyReq(req), "versionedAsset req"));
@@ -102,14 +77,11 @@ libRouter.get(
 
 // -----------------------------------------  Route to main. Fingerprinted is the static-getter #3, wrapped in a service:
 
-
-libRouter.get(
-    [
-        '/?',
-    ], req => {
+//   '/?' catches webapp root, both with and without a trailing slash. This syntax requires lib-router 3+
+libRouter.get('/?', req => {
 
     if (!(req.rawPath || '').endsWith('/')) {
-                                                                                                                        log.info("Redirecting!");
+                                                                                                                        log.info("Redirecting...");
         return {
             redirect: req.path + '/'
         }
