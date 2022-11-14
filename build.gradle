@@ -25,7 +25,7 @@ dependencies {
     //include "com.enonic.xp:lib-repo:${xpVersion}"
     //include "com.enonic.xp:lib-websocket:${xpVersion}"
 
-    include "com.enonic.lib:lib-thymeleaf:2.0.1"
+    include "com.enonic.lib:lib-thymeleaf:2.0.2"
     include 'com.enonic.lib:lib-router:3.0.0'
     include 'com.enonic.lib:lib-landingpage:2.0.0'
 
